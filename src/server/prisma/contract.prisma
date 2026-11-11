@@ -9,7 +9,4 @@ model User {
   updatedAt temporal.UpdatedAt
 }
 
-model Product{
-  id Int 
-}
 
