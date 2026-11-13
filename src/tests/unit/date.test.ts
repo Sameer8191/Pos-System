@@ -4,7 +4,7 @@ import {
   getFinancialYear,
   getFinancialYearEnd,
   getFinancialYearStart,
-} from "../../lib/date";
+} from "../../server/lib/date";
 
 describe("financial year utilities", () => {
   it("uses April 1 as the financial year boundary", () => {
