@@ -15,7 +15,7 @@ export const calculatePercentage = (amount: number, percentage: number) => {
   return percentageAmount;
 };
 
-export const calculateDiscount = (
+export const calculateDiscountedPrice = (
   amount: number,
   discountPercentage: number,
 ) => {
@@ -36,7 +36,7 @@ export const calculateTotalWithTax = (
   amount: number,
   taxPercentage: number,
 ) => {
-  const taxAmount = calculatePercentage(amount, taxPercentage);
+  const taxAmount = calculateTax(amount, taxPercentage);
   const totalAmount = taxAmount + amount;
 
   return totalAmount;
@@ -44,6 +44,46 @@ export const calculateTotalWithTax = (
 
 export const calculateSubTotal = (items: CartItem[]) => {
   return items.reduce((acc, item) => {
-    return (acc + item.price * item.quantity);
+    return acc + item.price * item.quantity;
   }, 0);
+};
+
+export const calculateCartDiscount = (
+  subtotal: number,
+  discountPercentage: number,
+) => {
+  const discountAmount = calculatePercentage(subtotal, discountPercentage);
+
+  return discountAmount;
+};
+
+export const calculateCartTax = (
+  taxableAmount: number,
+  taxPercentage: number,
+) => {
+  const taxAmount = calculateTax(taxableAmount, taxPercentage);
+
+  return taxAmount;
+};
+
+export const calculateCartTotal = (
+  subtotal: number,
+  discountAmount: number,
+  taxAmount: number,
+) => {
+  const totalAmount = subtotal - discountAmount + taxAmount;
+
+  return totalAmount;
+};
+
+export const calculateItemTotal = (price: number, quantity: number) => {
+  const itemAmount = price * quantity;
+  return itemAmount;
+};
+
+export const formatPriceWithoutCurrency = (amount: number) => {
+  return new Intl.NumberFormat("en-IN", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
 };
