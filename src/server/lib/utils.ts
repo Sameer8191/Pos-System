@@ -1,5 +1,3 @@
-import { prototype } from "events";
-
 export const capitalize = (word: string) => {
   const capitalLetter = word.charAt(0).toUpperCase() + word.slice(1);
 
@@ -7,8 +5,8 @@ export const capitalize = (word: string) => {
 };
 
 export const capitalizeWords = (sentence: string) => {
-  const capitalizeWords = sentence.split(" ");
-  const capitalSentence = capitalizeWords.map(capitalize).join(" ");
+  const words = sentence.split(" ");
+  const capitalSentence = words.map(capitalize).join(" ");
 
   return capitalSentence;
 };
@@ -24,9 +22,7 @@ export const slugify = (text: string): string => {
 
   const removedHyphen = normalizedText.replace(/^-+|-+$/g, "");
 
-  const trimmedText = removedHyphen.trim();
-
-  return trimmedText;
+  return removedHyphen;
 };
 
 export const isEmpty = (value: unknown): boolean => {
@@ -35,8 +31,8 @@ export const isEmpty = (value: unknown): boolean => {
   }
 
   if (typeof value === "string") {
-    const clearString = value.trim().length;
-    if (clearString === 0) return true;
+    const trimmedLength = value.trim().length;
+    if (trimmedLength === 0) return true;
   }
   if (Array.isArray(value)) {
     const arrayLength = value.length;
@@ -64,6 +60,8 @@ export const sleep = (ms: number): Promise<void> => {
 };
 
 export const truncate = (text: string, maxLength: number): string => {
+  if (maxLength < 0) return "";
+
   if (maxLength < 3) {
     return text.slice(0, maxLength);
   }
