@@ -1,0 +1,33 @@
+// use prisma-8
+
+enum Role {
+  ADMIN
+  MANAGER
+  CASHIER
+}
+
+enum PaymentMode {
+  CASH
+  CARD
+  UPI
+} 
+  
+enum SaleStatus {
+  COMPLETED
+  CANCELLED
+  REFUNDED
+}
+
+enum LedgerReason {
+  PURCHASE
+  SALE
+  SALE_RETURN
+  MANUAL_ADJUSTMENT
+  DAMAGE
+  OPENING_STOCK
+}
+
+enum VerificationPurpose {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+}
