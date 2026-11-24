@@ -7,7 +7,3 @@ export type BaseEntity = {
   createdAt: Timestamp;
   updatedAt: Timestamp;
 };
-
-// export type Status = "active" | "inactive";
-
-// export type UserRole = "admin" | "manager" | "cashier";
