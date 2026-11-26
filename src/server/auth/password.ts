@@ -1,26 +1,29 @@
+import "server-only";
+
 import bcrypt from "bcryptjs";
 
 const SALT_ROUNDS = 12;
+const MAX_PASSWORD_BYTES = 72;
 
-const validatePasswordLength = (password: string): void => {
-  if (Buffer.byteLength(password, "utf8") > 72) {
-    throw new Error("Password cannot exceed 72 bytes");
-  }
+const isPasswordTooLong = (password: string): boolean => {
+  return Buffer.byteLength(password, "utf8") > MAX_PASSWORD_BYTES;
 };
 
 export const hashPassword = async (password: string): Promise<string> => {
-  validatePasswordLength(password);
+  if (isPasswordTooLong(password)) {
+    throw new Error("Password cannot exceed 72 bytes");
+  }
 
-  const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
-
-  return hashedPassword;
+  return bcrypt.hash(password, SALT_ROUNDS);
 };
 
-export const verifyPassword = (
+export const verifyPassword = async (
   password: string,
   hashedPassword: string,
 ): Promise<boolean> => {
-  validatePasswordLength(password);
+  if (isPasswordTooLong(password)) {
+    return false;
+  }
 
   return bcrypt.compare(password, hashedPassword);
 };
