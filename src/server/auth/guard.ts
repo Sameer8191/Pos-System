@@ -1,9 +1,8 @@
 import "server-only";
 
-import type { Role } from "@prisma/client";
 import { getSession } from "./session";
 import { hasPermission, hasAnyPermission } from "./rbac";
-import type { Permission } from "./rbac";
+import type { Permission, Role } from "./rbac";
 import AppError from "../utils/error";
 import type { JWTPayload } from "./jwt";
 

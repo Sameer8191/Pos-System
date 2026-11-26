@@ -26,7 +26,7 @@ export const getSession = async (): Promise<JWTPayload | null> => {
   const cookieStore = await cookies();
   const session = cookieStore.get(SESSION_COOKIE_NAME);
 
-  if (!session) {
+  if (!session?.value) {
     return null;
   }
 
