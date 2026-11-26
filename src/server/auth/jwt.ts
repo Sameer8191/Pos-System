@@ -1,17 +1,27 @@
+import "server-only";
+
 import { SignJWT, jwtVerify } from "jose";
-import { Role } from "@prisma/client";
+import { VALID_ROLES } from "./rbac";
+import type { Role } from "./rbac";
 
-const JWT_SECRET = process.env.JWT_SECRET;
+let cachedSecretKey: Uint8Array | null = null;
 
-if (!JWT_SECRET) {
-  throw new Error("JWT_SECRET is not defined");
-}
+const getSecretKey = (): Uint8Array => {
+  if (cachedSecretKey) return cachedSecretKey;
 
-if (new TextEncoder().encode(JWT_SECRET).length < 32) {
-  throw new Error("JWT_SECRET must be at least 32 bytes");
-}
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error("JWT_SECRET is not defined");
+  }
 
-const secretKey = new TextEncoder().encode(JWT_SECRET);
+  const encoded = new TextEncoder().encode(secret);
+  if (encoded.length < 32) {
+    throw new Error("JWT_SECRET must be at least 32 bytes");
+  }
+
+  cachedSecretKey = encoded;
+  return cachedSecretKey;
+};
 
 export type JWTPayload = {
   userId: string;
@@ -22,23 +32,25 @@ export type JWTPayload = {
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
 
 export const generateToken = async (payload: JWTPayload): Promise<string> => {
-  const jwt = await new SignJWT(payload)
+  return new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime(JWT_EXPIRES_IN)
-    .sign(secretKey);
-
-  return jwt;
+    .sign(getSecretKey());
 };
 
 const isValidRole = (value: unknown): value is Role => {
-  return Object.values(Role).some((role) => role === value);
+  return (
+    typeof value === "string" &&
+    (VALID_ROLES as readonly string[]).includes(value)
+  );
 };
 
 export const verifyToken = async (token: string): Promise<JWTPayload> => {
-  const { payload } = await jwtVerify(token, secretKey, {
+  const { payload } = await jwtVerify(token, getSecretKey(), {
     algorithms: ["HS256"],
   });
+
   if (
     typeof payload.userId !== "string" ||
     payload.userId.trim().length === 0 ||
@@ -48,21 +60,10 @@ export const verifyToken = async (token: string): Promise<JWTPayload> => {
   ) {
     throw new Error("Invalid JWT payload");
   }
+
   return {
     userId: payload.userId,
     organizationId: payload.organizationId,
     role: payload.role,
   };
 };
-
-/* if (
-  typeof payload.userId !== "string" ||
-  payload.userId.trim().length === 0 ||
-  typeof payload.organizationId !== "string" ||
-  payload.organizationId.trim().length === 0 ||
-  typeof payload.role !== "string" ||
-  payload.role.trim().length === 0
-) {
-  throw new Error("Invalid JWT payload");
-}
-  */
